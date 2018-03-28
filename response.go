@@ -1,7 +1,6 @@
 package fcm
 
 import (
-	"encoding/json"
 	"errors"
 )
 
@@ -111,37 +110,5 @@ type Response struct {
 type Result struct {
 	MessageID      string `json:"message_id"`
 	RegistrationID string `json:"registration_id"`
-	Error          error  `json:"error"`
-}
-
-// UnmarshalJSON implements json.Unmarshaler interface.
-func (r *Result) UnmarshalJSON(data []byte) error {
-	var result struct {
-		MessageID      string `json:"message_id"`
-		RegistrationID string `json:"registration_id"`
-		Error          string `json:"error"`
-	}
-
-	if err := json.Unmarshal(data, &result); err != nil {
-		return err
-	}
-
-	r.MessageID = result.MessageID
-	r.RegistrationID = result.RegistrationID
-	r.Error = errMap[result.Error]
-
-	return nil
-}
-
-// Unregistered checks if the device token is unregistered,
-// according to response from FCM server. Useful to determine
-// if app is uninstalled.
-func (r Result) Unregistered() bool {
-	switch r.Error {
-	case ErrNotRegistered, ErrMismatchSenderID, ErrMissingRegistration, ErrInvalidRegistration:
-		return true
-
-	default:
-		return false
-	}
+	Error          string `json:"error"`
 }
